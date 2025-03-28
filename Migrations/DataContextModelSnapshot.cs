@@ -24,17 +24,14 @@ namespace MvcApi.Migrations
 
             modelBuilder.Entity("MvcApi.Models.User", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Address")
                         .HasColumnType("text");
 
                     b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Email")
@@ -54,7 +51,6 @@ namespace MvcApi.Migrations
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("UpdatedAt")
-                        .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("UserName")

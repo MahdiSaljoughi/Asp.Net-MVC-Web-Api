@@ -5,7 +5,7 @@ using MvcApi.Models;
 namespace MvcApi.Controllers;
 
 [ApiController]
-[Route("users")]
+[Route("api/[controller]")]
 public class UsersController : ControllerBase
 {
     private readonly DataContext _dbContext;
@@ -15,63 +15,69 @@ public class UsersController : ControllerBase
         _dbContext = dbContext;
     }
 
-    [HttpGet]
-    public IActionResult GetUsers()
-    {
-        var users = _dbContext.Users.ToList();
-        return Ok(users);
-    }
-
-    [HttpGet("{id}")]
-    public IActionResult GetUser(int id)
-    {
-        var user = _dbContext.Users.Find(id);
-        if (user == null)
-            return NotFound(new { message = "User not found" });
-
-        return Ok(user);
-    }
-
     [HttpPost]
-    public IActionResult CreateUser([FromBody] User user)
+    public async Task<IActionResult> CreateUser([FromBody] User user)
     {
         if (!ModelState.IsValid)
         {
             return BadRequest(ModelState);
         }
 
-        _dbContext.Users.Add(user);
-        _dbContext.SaveChanges();
-
-        return CreatedAtAction(nameof(GetUser), new { id = user.Id }, user);
-    }
-    
-    [HttpPatch("{id}")]
-    public IActionResult UpdateUser(int id, [FromBody] User updatedUser)
-    {
-        var user = _dbContext.Users.Find(id);
-        if (user == null)
-            return NotFound(new { message = "User not found" });
-
-        updatedUser.Id = user.Id;
-
-        _dbContext.Entry(user).CurrentValues.SetValues(updatedUser);
+        user.CreatedAt = DateTime.UtcNow;
         user.UpdatedAt = DateTime.UtcNow;
 
-        _dbContext.SaveChanges();
+        _dbContext.Users.Add(user);
+        await _dbContext.SaveChangesAsync();
+
+        return StatusCode(201, new { message = "User Created Successfully", user });
+    }
+
+    [HttpGet]
+    public IActionResult GetUsers()
+    {
+        return StatusCode(200, _dbContext.Users);
+    }
+
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetUser(Guid id)
+    {
+        var user = await _dbContext.Users.FindAsync(id);
+        if (user == null)
+            return NotFound(new { message = $"User {id} not found" });
+
         return Ok(user);
     }
 
-    [HttpDelete("{id}")]
-    public IActionResult DeleteUser(int id)
+    [HttpPatch("{id}")]
+    public async Task<IActionResult> UpdateUser(Guid id, [FromBody] User updatedUser)
     {
-        var user = _dbContext.Users.Find(id);
+        var user = await _dbContext.Users.FindAsync(id);
         if (user == null)
-            return NotFound(new { message = "User not found" });
+            return NotFound(new { message = $"User {id} not found" });
+
+        updatedUser.Id = user.Id;
+        updatedUser.CreatedAt = user.CreatedAt;
+        updatedUser.UpdatedAt = DateTime.UtcNow;
+
+        _dbContext.Entry(user).CurrentValues.SetValues(updatedUser);
+
+        await _dbContext.SaveChangesAsync();
+        return StatusCode(200, new { message = $"User {user.Id} successfully updated", user });
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteUser(Guid id)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        var user = await _dbContext.Users.FindAsync(id);
+        if (user == null)
+            return NotFound(new { message = $"User {id} not found" });
 
         _dbContext.Users.Remove(user);
-        _dbContext.SaveChanges();
+        await _dbContext.SaveChangesAsync();
 
-        return NoContent();
+        return StatusCode(200, new { message = $"User {user.Id} successfully deleted", user });
     }
 }
