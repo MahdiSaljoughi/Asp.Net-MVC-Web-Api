@@ -1,12 +1,13 @@
 using Microsoft.AspNetCore.Mvc;
 using MvcApi.Data;
+using MvcApi.Interfaces;
 using MvcApi.Models;
 
 namespace MvcApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class UsersController : ControllerBase
+public class UsersController : ControllerBase, IUser
 {
     private readonly DataContext _dbContext;
 
@@ -16,7 +17,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateUser([FromBody] User user)
+    public async Task<IActionResult> Create([FromBody] User user)
     {
         if (!ModelState.IsValid)
         {
@@ -26,20 +27,20 @@ public class UsersController : ControllerBase
         user.CreatedAt = DateTime.UtcNow;
         user.UpdatedAt = DateTime.UtcNow;
 
-        _dbContext.Users.Add(user);
+        await _dbContext.Users.AddAsync(user);
         await _dbContext.SaveChangesAsync();
 
         return StatusCode(201, new { message = "User Created Successfully", user });
     }
 
     [HttpGet]
-    public IActionResult GetUsers()
+    public IActionResult GetAll()
     {
         return StatusCode(200, _dbContext.Users);
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetUser(Guid id)
+    public async Task<IActionResult> GetOne(Guid id)
     {
         var user = await _dbContext.Users.FindAsync(id);
         if (user == null)
@@ -49,7 +50,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpPatch("{id}")]
-    public async Task<IActionResult> UpdateUser(Guid id, [FromBody] User updatedUser)
+    public async Task<IActionResult> Update(Guid id, [FromBody] User updatedUser)
     {
         var user = await _dbContext.Users.FindAsync(id);
         if (user == null)
@@ -66,7 +67,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteUser(Guid id)
+    public async Task<IActionResult> Delete(Guid id)
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);

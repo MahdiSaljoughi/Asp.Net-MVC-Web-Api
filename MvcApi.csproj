@@ -88,6 +88,8 @@
 
     <ItemGroup>
       <Folder Include="Migrations\" />
+      <Folder Include="Repositories\" />
+      <Folder Include="Services\" />
       <Folder Include="wwwroot\" />
     </ItemGroup>
 
