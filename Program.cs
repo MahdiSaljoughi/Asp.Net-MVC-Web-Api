@@ -1,17 +1,18 @@
 using Microsoft.EntityFrameworkCore;
 using MvcApi.Data;
 using MvcApi.Services;
+using MvcApi.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
 // EFCore Context
-builder.Services.AddDbContext<DataContext>(options =>
+builder.Services.AddDbContext<DBContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Services
-builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<IUserService ,UserService>();
 
 var app = builder.Build();
 

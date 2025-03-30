@@ -1,13 +1,14 @@
 using MvcApi.Data;
 using MvcApi.Models;
+using MvcApi.Services.Interfaces;
 
 namespace MvcApi.Services;
 
-public class UserService
+public class UserService : IUserService
 {
-    private readonly DataContext _context;
+    private readonly DBContext _context;
 
-    public UserService(DataContext context)
+    public UserService(DBContext context)
     {
         _context = context;
     }

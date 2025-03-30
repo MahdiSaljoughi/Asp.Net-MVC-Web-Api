@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using MvcApi.Models;
 using MvcApi.Services;
+using MvcApi.Services.Interfaces;
 
 namespace MvcApi.Controllers;
 
@@ -8,9 +9,9 @@ namespace MvcApi.Controllers;
 [Route("api/[controller]")]
 public class UsersController : ControllerBase
 {
-    private readonly UserService _userService;
+    private readonly IUserService _userService;
 
-    public UsersController(UserService userService)
+    public UsersController(IUserService userService)
     {
         _userService = userService;
     }

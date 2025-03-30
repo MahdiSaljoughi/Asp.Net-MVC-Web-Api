@@ -1,0 +1,20 @@
+{
+  "Version": 1,
+  "Hash": "wWtYfTTmKSlieKceXES0ePzFhZN7UJz3LWpbzbw389c=",
+  "Source": "MvcApi",
+  "BasePath": "_content/MvcApi",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [
+    {
+      "Name": "MvcApi/wwwroot",
+      "Source": "MvcApi",
+      "ContentRoot": "/home/mahdi/Projects/RiderProjects/MvcApi/MvcApi/wwwroot/",
+      "BasePath": "_content/MvcApi",
+      "Pattern": "**"
+    }
+  ],
+  "Assets": [],
+  "Endpoints": []
+}
