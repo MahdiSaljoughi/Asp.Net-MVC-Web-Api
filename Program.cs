@@ -1,11 +1,17 @@
 using Microsoft.EntityFrameworkCore;
 using MvcApi.Data;
+using MvcApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
+
+// EFCore Context
 builder.Services.AddDbContext<DataContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Services
+builder.Services.AddScoped<UserService>();
 
 var app = builder.Build();
 
@@ -21,7 +27,6 @@ app.UseRouting();
 
 app.UseAuthorization();
 
-// app.MapStaticAssets();
 app.UseStaticFiles();
 
 app.MapControllers();

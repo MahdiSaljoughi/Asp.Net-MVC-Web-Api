@@ -15,7 +15,7 @@ public class HomeController : Controller
     
     public IActionResult Index()
     {
-        return Json(new { message = "Ecommerce Api Asp.Net MVC" });
+        return Ok(new { message = "Ecommerce Api Asp.Net MVC" });
     }
     
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

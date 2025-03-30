@@ -1,84 +1,67 @@
 using Microsoft.AspNetCore.Mvc;
-using MvcApi.Data;
-using MvcApi.Interfaces;
 using MvcApi.Models;
+using MvcApi.Services;
 
 namespace MvcApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class UsersController : ControllerBase, IUser
+public class UsersController : ControllerBase
 {
-    private readonly DataContext _dbContext;
+    private readonly UserService _userService;
 
-    public UsersController(DataContext dbContext)
+    public UsersController(UserService userService)
     {
-        _dbContext = dbContext;
+        _userService = userService;
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] User user)
+    public async Task<IActionResult> Create(User user)
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
-
-        user.CreatedAt = DateTime.UtcNow;
-        user.UpdatedAt = DateTime.UtcNow;
-
-        await _dbContext.Users.AddAsync(user);
-        await _dbContext.SaveChangesAsync();
-
+        await _userService.Add(user);
         return StatusCode(201, new { message = "User Created Successfully", user });
     }
 
     [HttpGet]
     public IActionResult GetAll()
     {
-        return StatusCode(200, _dbContext.Users);
+        return Ok(_userService.GetAll());
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetOne(Guid id)
     {
-        var user = await _dbContext.Users.FindAsync(id);
+        var user = await _userService.GetOne(id);
+
         if (user == null)
             return NotFound(new { message = $"User {id} not found" });
 
         return Ok(user);
     }
 
-    [HttpPatch("{id}")]
-    public async Task<IActionResult> Update(Guid id, [FromBody] User updatedUser)
+    [HttpPatch("{id:guid}")]
+    public async Task<IActionResult> Update(Guid id, User updatedUser)
     {
-        var user = await _dbContext.Users.FindAsync(id);
+        var user = await _userService.GetOne(id);
+
         if (user == null)
             return NotFound(new { message = $"User {id} not found" });
 
-        updatedUser.Id = user.Id;
-        updatedUser.CreatedAt = user.CreatedAt;
-        updatedUser.UpdatedAt = DateTime.UtcNow;
+        await _userService.Update(user!, updatedUser);
 
-        _dbContext.Entry(user).CurrentValues.SetValues(updatedUser);
-
-        await _dbContext.SaveChangesAsync();
-        return StatusCode(200, new { message = $"User {user.Id} successfully updated", user });
+        return Ok(new { message = $"User {id} successfully updated", user });
     }
 
-    [HttpDelete("{id}")]
+    [HttpDelete("{id:guid}")]
     public async Task<IActionResult> Delete(Guid id)
     {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState);
+        var user = await _userService.GetOne(id);
 
-        var user = await _dbContext.Users.FindAsync(id);
         if (user == null)
             return NotFound(new { message = $"User {id} not found" });
 
-        _dbContext.Users.Remove(user);
-        await _dbContext.SaveChangesAsync();
+        await _userService.Remove(user);
 
-        return StatusCode(200, new { message = $"User {user.Id} successfully deleted", user });
+        return Ok(new { message = $"User {id} successfully deleted", user });
     }
 }
