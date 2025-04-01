@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MvcApi.Models;
 using MvcApi.Services;
@@ -7,6 +8,7 @@ namespace MvcApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize(Roles = "Admin")]
 public class UsersController : ControllerBase
 {
     private readonly IUserService _userService;

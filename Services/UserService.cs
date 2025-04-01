@@ -6,9 +6,9 @@ namespace MvcApi.Services;
 
 public class UserService : IUserService
 {
-    private readonly DBContext _context;
+    private readonly DataContext _context;
 
-    public UserService(DBContext context)
+    public UserService(DataContext context)
     {
         _context = context;
     }

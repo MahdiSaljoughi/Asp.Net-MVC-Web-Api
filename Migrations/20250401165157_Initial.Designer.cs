@@ -11,8 +11,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace MvcApi.Migrations
 {
-    [DbContext(typeof(DBContext))]
-    [Migration("20250330171700_Initial")]
+    [DbContext(typeof(DataContext))]
+    [Migration("20250401165157_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -37,6 +37,10 @@ namespace MvcApi.Migrations
                     b.Property<Guid>("CreatedBy")
                         .HasColumnType("uuid");
 
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("text");
@@ -48,6 +52,12 @@ namespace MvcApi.Migrations
 
                     b.HasIndex("CreatedBy");
 
+                    b.HasIndex("Slug")
+                        .IsUnique();
+
+                    b.HasIndex("Title")
+                        .IsUnique();
+
                     b.ToTable("Products");
                 });
 
@@ -58,36 +68,50 @@ namespace MvcApi.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("Address")
-                        .HasColumnType("text");
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Email")
-                        .HasColumnType("text");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.Property<string>("FirstName")
-                        .HasColumnType("text");
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)");
 
                     b.Property<string>("LastName")
-                        .HasColumnType("text");
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)");
 
                     b.Property<string>("Phone")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(11)
+                        .HasColumnType("character varying(11)");
 
-                    b.Property<int>("RoleId")
-                        .HasColumnType("integer");
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("UserName")
-                        .HasColumnType("text");
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Phone", "UserName", "Email")
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.HasIndex("Phone")
+                        .IsUnique();
+
+                    b.HasIndex("UserName")
                         .IsUnique();
 
                     b.ToTable("Users");

@@ -16,13 +16,13 @@ namespace MvcApi.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    UserName = table.Column<string>(type: "text", nullable: true),
-                    FirstName = table.Column<string>(type: "text", nullable: true),
-                    LastName = table.Column<string>(type: "text", nullable: true),
-                    Email = table.Column<string>(type: "text", nullable: true),
-                    Phone = table.Column<string>(type: "text", nullable: false),
-                    Address = table.Column<string>(type: "text", nullable: true),
-                    RoleId = table.Column<int>(type: "integer", nullable: false),
+                    UserName = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: true),
+                    FirstName = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: true),
+                    LastName = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: true),
+                    Email = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    Phone = table.Column<string>(type: "character varying(11)", maxLength: 11, nullable: false),
+                    Address = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
+                    Role = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
@@ -37,6 +37,7 @@ namespace MvcApi.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Title = table.Column<string>(type: "text", nullable: false),
+                    Slug = table.Column<string>(type: "text", nullable: false),
                     CreatedBy = table.Column<Guid>(type: "uuid", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
@@ -58,9 +59,33 @@ namespace MvcApi.Migrations
                 column: "CreatedBy");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Users_Phone_UserName_Email",
+                name: "IX_Products_Slug",
+                table: "Products",
+                column: "Slug",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Products_Title",
+                table: "Products",
+                column: "Title",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_Email",
                 table: "Users",
-                columns: new[] { "Phone", "UserName", "Email" },
+                column: "Email",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_Phone",
+                table: "Users",
+                column: "Phone",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_UserName",
+                table: "Users",
+                column: "UserName",
                 unique: true);
         }
 

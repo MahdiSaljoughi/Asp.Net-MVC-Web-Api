@@ -118,3 +118,16 @@
 /home/mahdi/Projects/RiderProjects/MvcApi/MvcApi/obj/Release/net9.0/MvcApi.pdb
 /home/mahdi/Projects/RiderProjects/MvcApi/MvcApi/obj/Release/net9.0/MvcApi.genruntimeconfig.cache
 /home/mahdi/Projects/RiderProjects/MvcApi/MvcApi/obj/Release/net9.0/ref/MvcApi.dll
+/home/mahdi/Projects/RiderProjects/MvcApi/MvcApi/bin/Release/net9.0/Microsoft.AspNetCore.Authentication.JwtBearer.dll
+/home/mahdi/Projects/RiderProjects/MvcApi/MvcApi/bin/Release/net9.0/Microsoft.IdentityModel.Abstractions.dll
+/home/mahdi/Projects/RiderProjects/MvcApi/MvcApi/bin/Release/net9.0/Microsoft.IdentityModel.JsonWebTokens.dll
+/home/mahdi/Projects/RiderProjects/MvcApi/MvcApi/bin/Release/net9.0/Microsoft.IdentityModel.Logging.dll
+/home/mahdi/Projects/RiderProjects/MvcApi/MvcApi/bin/Release/net9.0/Microsoft.IdentityModel.Protocols.dll
+/home/mahdi/Projects/RiderProjects/MvcApi/MvcApi/bin/Release/net9.0/Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
+/home/mahdi/Projects/RiderProjects/MvcApi/MvcApi/bin/Release/net9.0/Microsoft.IdentityModel.Tokens.dll
+/home/mahdi/Projects/RiderProjects/MvcApi/MvcApi/bin/Release/net9.0/Microsoft.OpenApi.dll
+/home/mahdi/Projects/RiderProjects/MvcApi/MvcApi/bin/Release/net9.0/Swashbuckle.AspNetCore.Swagger.dll
+/home/mahdi/Projects/RiderProjects/MvcApi/MvcApi/bin/Release/net9.0/Swashbuckle.AspNetCore.SwaggerGen.dll
+/home/mahdi/Projects/RiderProjects/MvcApi/MvcApi/bin/Release/net9.0/Swashbuckle.AspNetCore.SwaggerUI.dll
+/home/mahdi/Projects/RiderProjects/MvcApi/MvcApi/bin/Release/net9.0/System.IdentityModel.Tokens.Jwt.dll
+/home/mahdi/Projects/RiderProjects/MvcApi/MvcApi/obj/Release/net9.0/MvcApi.MvcApplicationPartsAssemblyInfo.cs
