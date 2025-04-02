@@ -68,6 +68,7 @@ public static class ServiceExtensions
         });
 
         // Services
+        services.AddHttpContextAccessor();
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IAuthService, AuthService>();
     }

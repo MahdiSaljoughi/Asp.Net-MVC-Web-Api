@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using System.Security.Claims;
 using Microsoft.EntityFrameworkCore;
 using MvcApi.Data;
 using MvcApi.Dto;
@@ -10,10 +11,12 @@ namespace MvcApi.Services;
 public class UserService : IUserService
 {
     private readonly DataContext _context;
+    private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public UserService(DataContext context)
+    public UserService(DataContext context, IHttpContextAccessor httpContextAccessor)
     {
         _context = context;
+        _httpContextAccessor = httpContextAccessor;
     }
 
     public async Task<ResponseDto> AddAsync(User newUser)
@@ -23,9 +26,7 @@ public class UserService : IUserService
         if (existingUser != null)
         {
             return new ResponseDto
-            {
-                Success = false, Message = $"User {newUser.Phone} already exists.", Data = { }, StatusCode = 400
-            };
+                { Success = false, Message = $"User {newUser.Phone} already exists.", Data = { }, StatusCode = 400 };
         }
 
         newUser.CreatedAt = DateTime.UtcNow;
@@ -43,34 +44,69 @@ public class UserService : IUserService
         return _context.Users.AsQueryable();
     }
 
+    public async Task<ResponseDto> GetCurrentUser()
+    {
+        var userIdClaim = _httpContextAccessor.HttpContext?.User.Claims
+            .FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+
+        if (userIdClaim == null)
+        {
+            return new ResponseDto
+            {
+                Success = false, Message = "User ID not found in token", Data = { }, StatusCode = 404
+            };
+        }
+
+        var userId = Guid.Parse(userIdClaim.Value);
+        var user = await GetOneAsync(u => u.Id == userId);
+
+        if (user == null)
+        {
+            return new ResponseDto
+            {
+                Success = false, Message = "User not found", Data = { }, StatusCode = 404
+            };
+        }
+
+        return new ResponseDto
+        {
+            Success = true, Message = "User found", Data = user, StatusCode = 200
+        };
+    }
+
     public async Task<User?> GetOneAsync(Expression<Func<User, bool>> filter)
     {
         return await _context.Users.FirstOrDefaultAsync(filter);
     }
 
-    public async Task<ResponseDto> UpdateAsync(User user, User updatedUser)
+    public async Task<ResponseDto> UpdateAsync(Guid id, UserUpdataDto updatedUser)
     {
-        var existingUser = await GetOneAsync(user => user.Id == updatedUser.Id);
+        var user = await GetOneAsync(u => u.Id == id);
 
-        if (existingUser == null)
+        if (user == null)
         {
             return new ResponseDto
             {
-                Success = false, Message = $"User {updatedUser.Id} does not exists.", Data = updatedUser,
-                StatusCode = 400
+                Success = false, Message = $"User {id} does not exist.", Data = { },
+                StatusCode = 404
             };
         }
 
-        updatedUser.Id = user.Id;
-        updatedUser.CreatedAt = user.CreatedAt;
-        updatedUser.UpdatedAt = DateTime.UtcNow;
+        updatedUser.Role ??= user.Role;
 
-        _context.Users.Entry(user).CurrentValues.SetValues(updatedUser);
+        _context.Entry(user).CurrentValues.SetValues(updatedUser);
+
+        user.UpdatedAt = DateTime.UtcNow;
 
         await _context.SaveChangesAsync();
 
         return new ResponseDto
-            { Success = true, Message = $"User {user.Id} updated.", Data = updatedUser, StatusCode = 200 };
+        {
+            Success = true,
+            Message = $"User {user.Id} updated.",
+            Data = user,
+            StatusCode = 200
+        };
     }
 
     public async Task UpdateRangeAsync(User[] users)
@@ -79,10 +115,25 @@ public class UserService : IUserService
         await _context.SaveChangesAsync();
     }
 
-    public async Task RemoveAsync(User user)
+    public async Task<ResponseDto> RemoveAsync(Guid id)
     {
+        var user = await GetOneAsync(u => u.Id == id);
+
+        if (user == null)
+        {
+            return new ResponseDto
+            {
+                Success = false, Message = $"User {id} does not exist.", Data = { }, StatusCode = 404
+            };
+        }
+
         _context.Users.Remove(user);
         await _context.SaveChangesAsync();
+
+        return new ResponseDto
+        {
+            Success = true, Message = $"User {user.Id} deleted successfully", Data = user, StatusCode = 200
+        };
     }
 
     public async Task RemoveRangeAsync(User[] users)

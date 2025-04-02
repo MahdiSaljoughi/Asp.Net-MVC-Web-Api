@@ -48,12 +48,13 @@ public class AuthService : IAuthService
         {
             var result = await _userService.AddAsync(new User
             {
+                UserName = loginDto.Phone,
                 Phone = loginDto.Phone,
                 Role = "Customer"
             });
 
             if (!result.Success) return result;
-            
+
             user = await _userService.GetOneAsync(u => u.Phone == loginDto.Phone);
         }
 

@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MvcApi.Dto;
 using MvcApi.Models;
 using MvcApi.Services.Interfaces;
 
@@ -7,7 +8,6 @@ namespace MvcApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Roles = "Admin")]
 public class UsersController : ControllerBase
 {
     private readonly IUserService _userService;
@@ -18,19 +18,32 @@ public class UsersController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Create(User user)
     {
-        await _userService.AddAsync(user);
-        return StatusCode(201, new { message = "User Created Successfully", user });
-    }
+        var result = await _userService.AddAsync(user);
 
+        return StatusCode(result.StatusCode, result);
+    }
+    
     [HttpGet]
+    [Authorize(Roles = "Admin")]
     public IActionResult GetAll()
     {
         return Ok(_userService.GetAll());
     }
-
+    
+    [HttpGet("me")]
+    [Authorize]
+    public async Task<IActionResult> GetCurrentUser()
+    {
+        var result = await _userService.GetCurrentUser();
+        
+        return StatusCode(result.StatusCode, result);
+    }
+    
     [HttpGet("{id:guid}")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> GetOne(Guid id)
     {
         var user = await _userService.GetOneAsync(u => u.Id == id);
@@ -42,28 +55,20 @@ public class UsersController : ControllerBase
     }
 
     [HttpPatch("{id:guid}")]
-    public async Task<IActionResult> Update(Guid id, User updatedUser)
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> Update(Guid id, UserUpdataDto updatedUser)
     {
-        var user = await _userService.GetOneAsync(u => u.Id == id);
+        var result = await _userService.UpdateAsync(id, updatedUser);
 
-        if (user == null)
-            return NotFound(new { message = $"User {id} not found" });
-
-        await _userService.UpdateAsync(user!, updatedUser);
-
-        return Ok(new { message = $"User {id} successfully updated", user });
+        return StatusCode(result.StatusCode, result);
     }
 
     [HttpDelete("{id:guid}")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Delete(Guid id)
     {
-        var user = await _userService.GetOneAsync(u => u.Id == id);
+        var result = await _userService.RemoveAsync(id);
 
-        if (user == null)
-            return NotFound(new { message = $"User {id} not found" });
-
-        await _userService.RemoveAsync(user);
-
-        return Ok(new { message = $"User {id} successfully deleted", user });
+        return StatusCode(result.StatusCode, result);
     }
 }

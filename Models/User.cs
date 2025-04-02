@@ -23,13 +23,11 @@ public class User
     [Required]
     [RegularExpression(@"^\d{11}$", ErrorMessage = "Phone number must be exactly 11 digits.")]
     [StringLength(11)]
-    public string Phone { get; set; } = string.Empty;
+    public string Phone { get; set; } = null!;
 
     [StringLength(500)] public string? Address { get; set; }
 
-    [Required]
-    [StringLength(20)]
-    public string Role { get; set; }
+    [Required] [StringLength(20)] public string Role { get; set; } = "Customer";
     
     // [Required] public int RoleId { get; set; }
     // [ForeignKey("RoleId")] [BindNever] public virtual Role Role { get; set; }
