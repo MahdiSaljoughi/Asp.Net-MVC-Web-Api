@@ -23,7 +23,7 @@ public class User
     [Required]
     [RegularExpression(@"^\d{11}$", ErrorMessage = "Phone number must be exactly 11 digits.")]
     [StringLength(11)]
-    public string Phone { get; set; }
+    public string Phone { get; set; } = string.Empty;
 
     [StringLength(500)] public string? Address { get; set; }
 

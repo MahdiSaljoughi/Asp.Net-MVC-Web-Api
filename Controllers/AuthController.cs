@@ -1,9 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
-using MvcApi.Data;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
+using MvcApi.Dto;
+using MvcApi.Services.Interfaces;
 
 namespace MvcApi.Controllers;
 
@@ -11,49 +8,36 @@ namespace MvcApi.Controllers;
 [Route("api/[controller]")]
 public class AuthController : ControllerBase
 {
-    private readonly DataContext _context;
-    private readonly IConfiguration _configuration;
+    private readonly IAuthService _authService;
 
-    public AuthController(DataContext context, IConfiguration configuration)
+    public AuthController(IAuthService authService)
     {
-        _context = context;
-        _configuration = configuration;
+        _authService = authService;
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Register(RegisterDto registerDto)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+        
+        var result = await _authService.RegisterAsync(registerDto);
+
+        return StatusCode(result.StatusCode, result);
     }
 
     [HttpPost("login")]
-    public IActionResult Login([FromBody] LoginRequest loginRequest)
+    public async Task<IActionResult> Login(LoginDto loginDto)
     {
-        var user = _context.Users.FirstOrDefault(u => u.Phone == loginRequest.Phone);
-        if (user == null)
+        if (!ModelState.IsValid)
         {
-            return Unauthorized("User not found.");
+            return BadRequest(ModelState);
         }
+        
+        var result = await _authService.LoginAsync(loginDto);
 
-        var claims = new[]
-        {
-            new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-        };
-
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
-        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-        var token = new JwtSecurityToken(
-            issuer: _configuration["Jwt:Issuer"],
-            audience: _configuration["Jwt:Audience"],
-            claims: claims,
-            expires: DateTime.UtcNow.AddHours(24),
-            signingCredentials: creds
-        );
-
-        return Ok(new
-        {
-            token = new JwtSecurityTokenHandler().WriteToken(token)
-        });
+        return StatusCode(result.StatusCode, result);
     }
-}
-
-public class LoginRequest
-{
-    public string Phone { get; set; }
 }

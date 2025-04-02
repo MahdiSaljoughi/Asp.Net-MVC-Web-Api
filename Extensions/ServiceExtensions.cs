@@ -69,5 +69,6 @@ public static class ServiceExtensions
 
         // Services
         services.AddScoped<IUserService, UserService>();
+        services.AddScoped<IAuthService, AuthService>();
     }
 }

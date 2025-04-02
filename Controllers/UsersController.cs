@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MvcApi.Models;
-using MvcApi.Services;
 using MvcApi.Services.Interfaces;
 
 namespace MvcApi.Controllers;
@@ -21,7 +20,7 @@ public class UsersController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create(User user)
     {
-        await _userService.Add(user);
+        await _userService.AddAsync(user);
         return StatusCode(201, new { message = "User Created Successfully", user });
     }
 
@@ -34,7 +33,7 @@ public class UsersController : ControllerBase
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetOne(Guid id)
     {
-        var user = await _userService.GetOne(id);
+        var user = await _userService.GetOneAsync(u => u.Id == id);
 
         if (user == null)
             return NotFound(new { message = $"User {id} not found" });
@@ -45,12 +44,12 @@ public class UsersController : ControllerBase
     [HttpPatch("{id:guid}")]
     public async Task<IActionResult> Update(Guid id, User updatedUser)
     {
-        var user = await _userService.GetOne(id);
+        var user = await _userService.GetOneAsync(u => u.Id == id);
 
         if (user == null)
             return NotFound(new { message = $"User {id} not found" });
 
-        await _userService.Update(user!, updatedUser);
+        await _userService.UpdateAsync(user!, updatedUser);
 
         return Ok(new { message = $"User {id} successfully updated", user });
     }
@@ -58,12 +57,12 @@ public class UsersController : ControllerBase
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> Delete(Guid id)
     {
-        var user = await _userService.GetOne(id);
+        var user = await _userService.GetOneAsync(u => u.Id == id);
 
         if (user == null)
             return NotFound(new { message = $"User {id} not found" });
 
-        await _userService.Remove(user);
+        await _userService.RemoveAsync(user);
 
         return Ok(new { message = $"User {id} successfully deleted", user });
     }
