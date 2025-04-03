@@ -1,7 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
-using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
+using MvcApi.Models.Enums;
 
 namespace MvcApi.Models;
 
@@ -27,12 +26,8 @@ public class User
 
     [StringLength(500)] public string? Address { get; set; }
 
-    [Required] [StringLength(20)] public string Role { get; set; } = "Customer";
-    
-    // [Required] public int RoleId { get; set; }
-    // [ForeignKey("RoleId")] [BindNever] public virtual Role Role { get; set; }
-    
-    public DateTime CreatedAt { get; set; }
+    public UserRole? Role { get; set; } = UserRole.Customer;
 
-    public DateTime UpdatedAt { get; set; }
+    public DateTime? CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime? UpdatedAt { get; set; } = DateTime.UtcNow;
 }

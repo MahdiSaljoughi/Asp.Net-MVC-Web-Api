@@ -71,5 +71,9 @@ public static class ServiceExtensions
         services.AddHttpContextAccessor();
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<IProductService, ProductService>();
+        services.AddScoped<IOrderService, OrderService>();
+        services.AddScoped<ICategoryService, CategoryService>();
+        services.AddScoped<IVariantService, VariantService>();
     }
 }

@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
+using MvcApi.Models.Enums;
 
 namespace MvcApi.Dto;
 
@@ -17,5 +18,5 @@ public class UserUpdataDto
 
     [StringLength(500)] public string? Address { get; set; }
 
-    [StringLength(20)] public string? Role { get; set; }
+    public UserRole? Role { get; set; }
 }

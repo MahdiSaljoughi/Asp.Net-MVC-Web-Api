@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MvcApi.Dto;
 using MvcApi.Models;
+using MvcApi.Models.Enums;
 using MvcApi.Services.Interfaces;
 
 namespace MvcApi.Controllers;
@@ -18,32 +19,32 @@ public class UsersController : ControllerBase
     }
 
     [HttpPost]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = nameof(UserRole.Admin))]
     public async Task<IActionResult> Create(User user)
     {
         var result = await _userService.AddAsync(user);
 
         return StatusCode(result.StatusCode, result);
     }
-    
+
     [HttpGet]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = nameof(UserRole.Admin))]
     public IActionResult GetAll()
     {
         return Ok(_userService.GetAll());
     }
-    
+
     [HttpGet("me")]
     [Authorize]
     public async Task<IActionResult> GetCurrentUser()
     {
         var result = await _userService.GetCurrentUser();
-        
+
         return StatusCode(result.StatusCode, result);
     }
-    
+
     [HttpGet("{id:guid}")]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = nameof(UserRole.Admin))]
     public async Task<IActionResult> GetOne(Guid id)
     {
         var user = await _userService.GetOneAsync(u => u.Id == id);
@@ -55,7 +56,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpPatch("{id:guid}")]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = nameof(UserRole.Admin))]
     public async Task<IActionResult> Update(Guid id, UserUpdataDto updatedUser)
     {
         var result = await _userService.UpdateAsync(id, updatedUser);
@@ -64,7 +65,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpDelete("{id:guid}")]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = nameof(UserRole.Admin))]
     public async Task<IActionResult> Delete(Guid id)
     {
         var result = await _userService.RemoveAsync(id);

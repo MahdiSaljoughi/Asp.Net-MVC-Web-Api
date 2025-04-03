@@ -29,9 +29,6 @@ public class UserService : IUserService
                 { Success = false, Message = $"User {newUser.Phone} already exists.", Data = { }, StatusCode = 400 };
         }
 
-        newUser.CreatedAt = DateTime.UtcNow;
-        newUser.UpdatedAt = DateTime.UtcNow;
-
         await _context.Users.AddAsync(newUser);
         await _context.SaveChangesAsync();
 
@@ -91,13 +88,17 @@ public class UserService : IUserService
                 StatusCode = 404
             };
         }
-
+        
+        updatedUser.UserName ??= user.UserName;
+        updatedUser.Email ??= user.Email;
+        updatedUser.Address ??= user.Address;
+        updatedUser.FirstName ??= user.FirstName;
+        updatedUser.LastName ??= user.LastName;
         updatedUser.Role ??= user.Role;
-
-        _context.Entry(user).CurrentValues.SetValues(updatedUser);
-
         user.UpdatedAt = DateTime.UtcNow;
 
+        _context.Entry(user).CurrentValues.SetValues(updatedUser);
+        
         await _context.SaveChangesAsync();
 
         return new ResponseDto

@@ -49,8 +49,7 @@ public class AuthService : IAuthService
             var result = await _userService.AddAsync(new User
             {
                 UserName = loginDto.Phone,
-                Phone = loginDto.Phone,
-                Role = "Customer"
+                Phone = loginDto.Phone
             });
 
             if (!result.Success) return result;

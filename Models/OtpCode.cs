@@ -18,5 +18,7 @@ public class OtpCode
     [StringLength(4)]
     public int Code { get; set; }
     
-    public DateTime CreatedAt { get; set; }
+    public DateTime ExpiresAt { get; set; }
+
+    public DateTime? CreatedAt { get; set; } = DateTime.UtcNow;
 }

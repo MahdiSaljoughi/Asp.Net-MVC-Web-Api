@@ -18,35 +18,33 @@ public class RoleMiddleware
     public async Task Invoke(HttpContext context)
     {
         var userId = context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        
         if (!string.IsNullOrEmpty(userId))
         {
-            using (var scope = _scopeFactory.CreateScope()) // ایجاد یک Scope جدید
+            using var scope = _scopeFactory.CreateScope();
+            var _context = scope.ServiceProvider.GetRequiredService<DataContext>();
+
+            var user = await _context.Users
+                .Where(u => u.Id.ToString() == userId)
+                .Select(u => new { u.Role }) 
+                .FirstOrDefaultAsync()
+                .ConfigureAwait(false);
+
+            if (user?.Role != null)
             {
-                var _context =
-                    scope.ServiceProvider.GetRequiredService<DataContext>(); // گرفتن DataContext از Scope جدید
-
-                var user = await _context.Users
-                    .FirstOrDefaultAsync(u => u.Id.ToString() == userId); // حذف Include چون Role فقط یک string است
-
-                if (user != null)
+                var claimsIdentity = context.User.Identity as ClaimsIdentity;
+                if (claimsIdentity != null)
                 {
-                    var claimsIdentity = context.User.Identity as ClaimsIdentity;
-                    if (claimsIdentity != null)
+                    foreach (var claim in claimsIdentity.FindAll(ClaimTypes.Role))
                     {
-                        // حذف هر رول قدیمی قبل از اضافه کردن رول جدید
-                        var existingRoleClaims = claimsIdentity.FindAll(ClaimTypes.Role).ToList();
-                        foreach (var claim in existingRoleClaims)
-                        {
-                            claimsIdentity.RemoveClaim(claim);
-                        }
-
-                        // اضافه کردن نقش جدید
-                        claimsIdentity.AddClaim(new Claim(ClaimTypes.Role, user.Role));
+                        claimsIdentity.RemoveClaim(claim);
                     }
+                    
+                    claimsIdentity.AddClaim(new Claim(ClaimTypes.Role, user.Role.ToString()!));
                 }
             }
         }
 
-        await _next(context);
+        await _next(context).ConfigureAwait(false);
     }
 }
